@@ -1,12 +1,17 @@
+import { Container, FeedbackBtn } from "./Options.styled";
 
 
 export const Options = ({updateFeedback, onReset, totalFeedback}) => {
     return (
-      <div>
-        <button onClick={() => updateFeedback('good')}>Good</button>
-        <button onClick={() => updateFeedback('neutral')}>Neutral</button>
-        <button onClick={() => updateFeedback('bad')}>Bad</button>
-        {totalFeedback > 0 && <button onClick={onReset}>Reset</button>}
-      </div>
+      <Container>
+        <FeedbackBtn onClick={() => updateFeedback('good')}>Good</FeedbackBtn>
+        <FeedbackBtn onClick={() => updateFeedback('neutral')}>
+          Neutral
+        </FeedbackBtn>
+        <FeedbackBtn onClick={() => updateFeedback('bad')}>Bad</FeedbackBtn>
+        {totalFeedback > 0 && (
+          <FeedbackBtn onClick={onReset}>Reset</FeedbackBtn>
+        )}
+      </Container>
     );
 }

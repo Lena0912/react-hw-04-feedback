@@ -1,4 +1,4 @@
-import  { Component, } from "react";
+import  { Component } from "react";
 import { Options } from "./Options/Options";
 import { Descriptions } from "./Descriptions/Descriptions";
 import { Feedback } from "./Feedback/Feedback";
@@ -11,6 +11,8 @@ export class App extends Component {
     neutral: 0,
     bad: 0
   };
+
+
 // Викликається при першому завантаженні компоненту
   componentDidMount() {
     const savedFeedback = localStorage.getItem('feedback');
