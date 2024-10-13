@@ -1,102 +1,117 @@
-import  { Component } from "react";
+import  { useEffect, useState } from "react";
 import { Options } from "./Options/Options";
 import { Descriptions } from "./Descriptions/Descriptions";
 import { Feedback } from "./Feedback/Feedback";
 import { Notification } from "./Notification";
 
 
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0
-  };
+export const App = () => {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
-
-// Викликається при першому завантаженні компоненту
-  componentDidMount() {
+  // Завантаження збереженого зворотного зв'язку з localStorage при монтуванні
+  useEffect(() => {
     const savedFeedback = localStorage.getItem('feedback');
-    
+
     if (savedFeedback) {
-      // Якщо дані є, парсимо їх і оновлюємо стан
-      this.setState(JSON.parse(savedFeedback));
+      const { good, neutral, bad } = JSON.parse(savedFeedback);
+      setGood(good);
+      setNeutral(neutral);
+      setBad(bad);
     }
-  }
-// Викликається після кожного оновлення компоненту
-  componentDidUpdate(prevProps, prevState) {
-    // Перевіряємо, чи змінився стан, і якщо так, зберігаємо новий стан у localStorage
-    if (prevState !== this.stste) {
-      localStorage.setItem('feedback', JSON.stringify(this.state));
-    }
-  }
+  }, []);
 
-// Оновлюємо стан при натисканні на одну з кнопок
-  updateFeedback = (feedbackType) => {
-    this.setState((prevState) => ({      
-      [feedbackType]: prevState[feedbackType] + 1,        
-    }));
+  // Збереження зворотного зв'язку в localStorage при зміні стану
+  useEffect(() => {
+    const feedbackState = { good, neutral, bad };
+
+    localStorage.setItem('feedback', JSON.stringify(feedbackState));
+  }, [good, neutral, bad]);
+
+  // Оновлюємо стан при натисканні на одну з кнопок
+  const updateFeedback = feedbackType => {
+    switch (feedbackType) {
+      case 'good':
+        setGood(prev => prev + 1);
+        break;
+      case 'neutral':
+        setNeutral(prev => prev + 1);
+        break;
+      case 'bad':
+        setBad(prev => prev + 1);
+        break;
+      default:
+        break;
+    }
   };
-
   // Підраховуємо загальну кількість відгуків
-  getTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return good + neutral + bad;
-  };
+  const getTotalFeedback = () => good + neutral + bad;
+
   // Підраховуємо відсоток позитивних відгуків
-  getPositiveFeedbackPercentage = () => {
-    const totalFeedback = this.getTotalFeedback();
-    const { good } = this.state;
-// Якщо загальна кількість відгуків = 0, повертаємо 0, щоб уникнути ділення на 0
-    return totalFeedback ===0 ? 0 : Math.round((good / totalFeedback) * 100);
-  }
-// Метод для скидання всіх відгуків
-  resetFeedback = () => {
-    const totalFeedback = this.getTotalFeedback();
+  const getPositiveFeedbackPercentage = () => {
+    const totalFeedback = getTotalFeedback();
+
+    // Якщо загальна кількість відгуків = 0, повертаємо 0, щоб уникнути ділення на 0
+    return totalFeedback === 0 ? 0 : Math.round((good / totalFeedback) * 100);
+  };
+
+  // Метод для скидання всіх відгуків
+  const resetFeedback = () => {
+    const totalFeedback = getTotalFeedback();
 
     if (totalFeedback !== 0) {
-      this.setState({
-        good: 0,
-        neutral: 0,
-        bad: 0
-      });
-    }       
+      setGood(0);
+      setNeutral(0);
+      setBad(0);
+    }
   };
 
-  renderContent = () => {
-    const totalFeedback = this.getTotalFeedback();
-    const { good, neutral, bad } = this.state;
-    const positivePercentage = this.getPositiveFeedbackPercentage();
+  const renderContent = () => {
+    const totalFeedback = getTotalFeedback();
+    const positivePercentage = getPositiveFeedbackPercentage();
 
     if (totalFeedback === 0) {
       return <Notification message="No feedback yet" />;
     }
     // Передаємо також відсоток позитивних відгуків у компонент Feedback
-    return <Feedback
-      good={good}
-      neutral={neutral}
-      bad={bad}
-      totalFeedback={totalFeedback}
-      positivePercentage={positivePercentage}
-    />;
+    return (
+      <Feedback
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        totalFeedback={totalFeedback}
+        positivePercentage={positivePercentage}
+      />
+    );
   };
 
-  render() {
-    const totalFeedback = this.getTotalFeedback();
-return (
-      <div>
-        <Descriptions/>
-    <Options
-      updateFeedback={this.updateFeedback}
-      onReset={this.resetFeedback}    
-      totalFeedback={totalFeedback}
-      
-    />
-        {this.renderContent()} 
-      </div>
-      
-      
+  const totalFeedback = getTotalFeedback();
+  return (
+    <div>
+      <Descriptions />
+      <Options
+        updateFeedback={updateFeedback}
+        onReset={resetFeedback}
+        totalFeedback={totalFeedback}
+      />
+      {renderContent()}
+    </div>
   );
-}
-}   
+};
+  
+
+
+
+  
+ 
+
+
+  
+
+   
+    
+
+  
 
 

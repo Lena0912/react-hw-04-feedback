@@ -3,7 +3,7 @@ import 'modern-normalize';
 
 
 
-export const GlobalSlyles = createGlobalStyle`
+export const GlobalStyles = createGlobalStyle`
 html {
   box-sizing: border-box;
   width: 100vw;
